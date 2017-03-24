@@ -3,7 +3,7 @@ import { GraphNode, Match, PathExpression } from '@atomist/rug/tree/PathExpressi
 import { EventHandler, Tags } from '@atomist/rug/operations/Decorators'
 
 
-@EventHandler("jenkins-builds", "Handle build events from Jenkins", 
+@EventHandler("JenkinsBuilds", "Handle build events from Jenkins",
     new PathExpression<GraphNode, GraphNode>(
         `/Build
             [/hasBuild::Commit()/author::GitHubId()
@@ -42,7 +42,7 @@ class Built implements HandleEvent<GraphNode, GraphNode> {
                 message.channelId = build.hasBuild().author().hasGitHubIdentity().hasChatIdentity().id()
             }
         }
-        
+
         return message
     }
 }

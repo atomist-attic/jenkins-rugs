@@ -1,7 +1,6 @@
 {
     "dependencies": {
-        "@atomist/rug": "0.17.2",
-        "@atomist/github": "0.2.0",
+        "@atomist/rugs": "^0.0.11",
         "mustache": "^2.3.0"
     },
     "devDependencies": {

@@ -1,4 +1,4 @@
-import { HandleEvent, Message } from '@atomist/rug/operations/Handlers'
+import { HandleEvent, Plan, LifecycleMessage, DirectedMessage, UserAddress } from '@atomist/rug/operations/Handlers'
 import { GraphNode, Match, PathExpression } from '@atomist/rug/tree/PathExpression'
 import { EventHandler, Tags } from '@atomist/rug/operations/Decorators'
 
@@ -7,45 +7,40 @@ import { Build } from '@atomist/cortex/Build'
 @EventHandler("JenkinsBuilds", "Handle build events from Jenkins",
     new PathExpression<Build, Build>(
         `/Build
-            [@platform='jenkins']
-            [/hasBuild::Commit()/author::GitHubId()
-                [/hasGithubIdentity::Person()/hasChatIdentity::ChatId()]?]
-            [/on::Repo()/channel::ChatChannel()]
-            [/triggeredBy::Push()
-                [/contains::Commit()/author::GitHubId()
-                    [/hasGithubIdentity::Person()/hasChatIdentity::ChatId()]?]
-                [/on::Repo()]]`))
+            [@provider='jenkins']
+            [/commit::Commit()[/author::GitHubId()[/person::Person()/chatId::ChatId()]?]
+                [/tags::Tag()]?]
+                [/repo::Repo()/channels::ChatChannel()]
+            [/push::Push()
+                [/commits::Commit()/author::GitHubId()
+                    [/person::Person()/chatId::ChatId()]?]
+                [/repo::Repo()]]`))
 @Tags("ci", "jenkins")
 class Built implements HandleEvent<Build, Build> {
-    handle(event: Match<Build, Build>): Message {
-        let build = event.root() as any
+    handle(event: Match<Build, Build>): Plan {
+        let build = event.root()
+        let plan = new Plan()
 
-        let message = new Message()
-        message.withNode(build)
-
-        let repo = build.on().name()
-
-        let cid = "commit_event/" + build.on().owner() + "/" + repo + "/" + build.hasBuild().sha()
-        message.withCorrelationId(cid)
-
-        // TODO split this into two handlers with proper tree expressions with predicates
-        /*if (build.status() == "Passed" || build.status() == "Fixed") {
-            if (build.status() == "Fixed") {
-                if (build.hasBuild().author().hasGithubIdentity() != null) {
-                    message.body = `Jenkins build ${build.name()} of repo ${repo} is now fixed`
-                    message.channelId = build.hasBuild().author().hasGitHubIdentity().hasChatIdentity().id()
+        let repo = build.repo.name
+        let owner = build.repo.owner
+        let cid = "commit_event/" + owner + "/" + repo + "/" + build.commit.sha
+        
+        let message = new LifecycleMessage(build, cid)
+        
+        if (build.status == "failed" || build.status == "broken") {
+            try {
+                if (build.commit.author != null && build.commit.author.person != null) {
+                    let body = `Jenkins build \`#${build.name}\` of \`${owner}/${repo}\` failed after your last commit \`${build.commit.sha}\`: ${build.buildUrl}`
+                    let address = new UserAddress(build.commit.author.person.chatId.id)
+                    plan.add(new DirectedMessage(body, address))
                 }
             }
-        }
-        else if (build.status() == "Failed" || build.status() == "Broken" || build.status() == "Still Failing") {
-            if (build.hasBuild().author().hasGithubIdentity() != null) {
-                let commit = "`" + build.hasBuild().sha() + "`"
-                message.body = `Jenkins build ${build.name()} of repo ${repo} failed after commit ${commit}: ${build.build_url()}`
-                message.channelId = build.hasBuild().author().hasGitHubIdentity().hasChatIdentity().id()
+            catch (e) {
+                console.log((<Error>e).message)
             }
-        }*/
-
-        return message
+        }
+        plan.add(message)
+        return plan
     }
 }
 export const built = new Built()

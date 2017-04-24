@@ -1,4 +1,4 @@
-import { HandleEvent, Plan, LifecycleMessage, DirectedMessage, UserAddress } from '@atomist/rug/operations/Handlers'
+import { EventPlan, HandleEvent, LifecycleMessage, DirectedMessage, UserAddress } from '@atomist/rug/operations/Handlers'
 import { GraphNode, Match, PathExpression } from '@atomist/rug/tree/PathExpression'
 import { EventHandler, Tags } from '@atomist/rug/operations/Decorators'
 
@@ -17,16 +17,16 @@ import { Build } from '@atomist/cortex/Build'
                 [/repo::Repo()]]`))
 @Tags("ci", "jenkins")
 class Built implements HandleEvent<Build, Build> {
-    handle(event: Match<Build, Build>): Plan {
+    handle(event: Match<Build, Build>): EventPlan {
         let build = event.root()
-        let plan = new Plan()
+        let plan = new EventPlan()
 
         let repo = build.repo.name
         let owner = build.repo.owner
         let cid = "commit_event/" + owner + "/" + repo + "/" + build.commit.sha
-        
+
         let message = new LifecycleMessage(build, cid)
-        
+
         if (build.status == "failed" || build.status == "broken") {
             try {
                 if (build.commit.author != null && build.commit.author.person != null) {

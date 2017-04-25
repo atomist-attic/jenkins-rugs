@@ -1,4 +1,4 @@
 group: "atomist"
-artifact: "jenkins-handlers"
+artifact: "jenkins-rugs"
 version: "0.7.0"
 requires: "[0.26.1,0.27.0)"

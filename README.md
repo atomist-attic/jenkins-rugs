@@ -1,13 +1,18 @@
-# Atomist 'jenkins-handlers'
+# Atomist 'jenkins-rugs'
 
-[![Build Status](https://travis-ci.org/atomist/jenkins-handlers.svg?branch=master)](https://travis-ci.org/atomist/jenkins-handlers)
+[![Build Status](https://travis-ci.org/atomist/jenkins-rugs.svg?branch=master)](https://travis-ci.org/atomist/jenkins-rugs)
 [![Slack Status](https://join.atomist.com/badge.svg)](https://join.atomist.com/)
 
-A set of Rug _handlers_ that that deal with [Jenkins](https://jenkins.io/).
+A set of Rugs that that integrate with [Jenkins][jenkins].
 
-Read read more about this at [Automating Our Development Flow With Atomist](https://medium.com/the-composition/automating-our-development-flow-with-atomist-6b0ec73348b6#.hwa55uv8o).
+[jenkins]: https://jenkins.io/
 
-See also the [Atomist documentation](http://docs.atomist.com/).
+Read more about automating software development
+at [Automating Our Development Flow With Atomist][blog].  Detailed
+documentation is available in the [Atomist Documentation][docs].
+
+[blog]: https://medium.com/the-composition/automating-our-development-flow-with-atomist-6b0ec73348b6#.hwa55uv8o
+[docs]: http://docs.atomist.com/
 
 ## Support
 
@@ -17,7 +22,7 @@ at [atomist-community.slack.com][slack].
 
 If you find a problem, please create an [issue][].
 
-[issue]: https://github.com/atomist/jenkins-handlers/issues
+[issue]: https://github.com/atomist/jenkins-rugs/issues
 
 ## Contributing
 

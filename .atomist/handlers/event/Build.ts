@@ -36,7 +36,7 @@ import { Build } from "@atomist/cortex/Build";
 @Tags("ci", "jenkins")
 class Built implements HandleEvent<Build, Build> {
     public handle(event: Match<Build, Build>): EventPlan {
-        const build = event.root();
+        const build = event.root;
         const plan = new EventPlan();
 
         const repo = build.repo.name;
